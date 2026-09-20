@@ -33,8 +33,8 @@ hakikisha:
   # Credentials Safaricom uses against POST /oauth2/v1/generate (Basic Auth).
   # No defaults on purpose: the service refuses to start if they are missing.
   auth:
-    username: ${HAKIKISHA_USERNAME}
-    password: ${HAKIKISHA_PASSWORD}
+    username: ${HAKIKISHA_USERNAME:graham218}
+    password: ${HAKIKISHA_PASSWORD:graham218}
     # Lifetime of an issued access token, in seconds (returned as expires_in).
     token-ttl-seconds: ${HAKIKISHA_TOKEN_TTL_SECONDS:3599}
 

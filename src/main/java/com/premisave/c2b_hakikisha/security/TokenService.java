@@ -10,6 +10,8 @@ import java.time.Instant;
 import java.util.Base64;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +21,8 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class TokenService {
+
+    private static final Logger log = LoggerFactory.getLogger(TokenService.class);
 
     private final HakikishaProperties props;
     private final Clock clock;
@@ -47,6 +51,27 @@ public class TokenService {
                 password.getBytes(StandardCharsets.UTF_8),
                 props.auth().password().getBytes(StandardCharsets.UTF_8));
         return userOk & passOk;
+    }
+
+    /**
+     * Says WHICH credential failed, for server-side logs only (never sent to the caller).
+     * Lengths are logged at DEBUG to reveal stray spaces or quotes without exposing the secrets.
+     */
+    public String describeMismatch(String username, String password) {
+        String expectedUser = props.auth().username();
+        String expectedPass = props.auth().password();
+        boolean userBad = username == null || !expectedUser.equals(username);
+        boolean passBad = password == null || !expectedPass.equals(password);
+        log.debug("Credential lengths - username received={} expected={}, password received={} expected={}",
+                username == null ? 0 : username.length(), expectedUser.length(),
+                password == null ? 0 : password.length(), expectedPass.length());
+        if (userBad && passBad) {
+            return "username and password do not match the configured values";
+        }
+        if (userBad) {
+            return "username does not match HAKIKISHA_USERNAME";
+        }
+        return "password does not match HAKIKISHA_PASSWORD";
     }
 
     public TokenResponse issue() {

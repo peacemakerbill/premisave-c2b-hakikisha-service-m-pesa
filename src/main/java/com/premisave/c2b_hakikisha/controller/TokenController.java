@@ -5,6 +5,8 @@ import com.premisave.c2b_hakikisha.exception.AuthException;
 import com.premisave.c2b_hakikisha.security.TokenService;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.CacheControl;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -17,6 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 /** Step 1 of the C2B Hakikisha flow: Safaricom exchanges Basic-Auth credentials for an access token. */
 @RestController
 public class TokenController {
+
+    private static final Logger log = LoggerFactory.getLogger(TokenController.class);
 
     private static final String BASIC_PREFIX = "Basic ";
     private static final String INVALID_CREDENTIALS = "Client credentials are invalid";
@@ -33,7 +37,13 @@ public class TokenController {
             @RequestHeader(name = HttpHeaders.AUTHORIZATION, required = false) String authorization) {
 
         String[] credentials = decodeBasic(authorization);
-        if (credentials == null || !tokenService.credentialsValid(credentials[0], credentials[1])) {
+        if (credentials == null) {
+            log.warn("Token request rejected: missing or malformed Basic Authorization header "
+                    + "(in Postman, set Authorization type to Basic Auth)");
+            throw new AuthException(HttpStatus.UNAUTHORIZED, INVALID_CREDENTIALS);
+        }
+        if (!tokenService.credentialsValid(credentials[0], credentials[1])) {
+            log.warn("Token request rejected: {}", tokenService.describeMismatch(credentials[0], credentials[1]));
             throw new AuthException(HttpStatus.UNAUTHORIZED, INVALID_CREDENTIALS);
         }
         if (!"client_credentials".equals(grantType)) {
