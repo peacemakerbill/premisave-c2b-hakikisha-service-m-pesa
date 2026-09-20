@@ -1,0 +1,65 @@
+spring:
+  application:
+    name: premisave-c2b-hakikisha-service
+
+  config:
+    # Loads ./.env (KEY=VALUE lines) as a properties source so ${VARS} below resolve
+    # without any extra library. "optional:" means the app still starts if the file
+    # is absent (e.g. in Docker/K8s, where real environment variables are used instead).
+    import: optional:file:./.env[.properties]
+
+  # Boot 4 moved the connection settings to spring.mongodb.*; the spring.data.mongodb.*
+  # line is kept so the same URI is picked up on older property layouts too.
+  mongodb:
+    uri: ${MONGODB_URI:mongodb://localhost:27017/premisave-c2b-hakikisha}
+  data:
+    mongodb:
+      uri: ${MONGODB_URI:mongodb://localhost:27017/premisave-c2b-hakikisha}
+
+server:
+  port: ${SERVER_PORT:8090}
+
+# ─── Wallet service (source of the name-lookup data) ──────────────────────────
+wallet:
+  service:
+    # GET {url}/internal/accounts?page=&size=  (paginated)
+    url: ${WALLET_SERVICE_URL:http://localhost:8084}
+
+# Shared secret sent as X-API-Key to wallet-service's /internal/** endpoints.
+# Must be identical to wallet-service's INTERNAL_API_KEY.
+internal:
+  api-key: ${INTERNAL_API_KEY}
+
+# ─── C2B Hakikisha ────────────────────────────────────────────────────────────
+hakikisha:
+  # Organisation paybill shortcode. Requests carrying any other shortcode are rejected.
+  shortcode: ${HAKIKISHA_SHORTCODE:600992}
+
+  # Credentials Safaricom uses against POST /oauth2/v1/generate (Basic Auth).
+  # No defaults on purpose: the service refuses to start if they are missing.
+  auth:
+    username: ${HAKIKISHA_USERNAME}
+    password: ${HAKIKISHA_PASSWORD}
+    # Lifetime of an issued access token, in seconds (returned as expires_in).
+    token-ttl-seconds: ${HAKIKISHA_TOKEN_TTL_SECONDS:3599}
+
+  # Wallet -> MongoDB synchronisation job.
+  sync:
+    enabled: ${HAKIKISHA_SYNC_ENABLED:true}
+    # How often the sync runs (measured from the END of the previous run), in minutes.
+    interval-minutes: ${HAKIKISHA_SYNC_INTERVAL_MINUTES:5}
+    # Also run one sync as soon as the application has started.
+    run-on-startup: ${HAKIKISHA_SYNC_RUN_ON_STARTUP:true}
+    # Page size requested from wallet-service.
+    page-size: ${HAKIKISHA_SYNC_PAGE_SIZE:100}
+    # After a fully successful sync, remove accounts wallet-service no longer returns,
+    # so lookups never answer with stale names. Skipped if wallet returned zero accounts.
+    delete-stale: ${HAKIKISHA_SYNC_DELETE_STALE:true}
+    # Timeouts (seconds) for calls to wallet-service.
+    connect-timeout-seconds: ${HAKIKISHA_SYNC_CONNECT_TIMEOUT_SECONDS:10}
+    read-timeout-seconds: ${HAKIKISHA_SYNC_READ_TIMEOUT_SECONDS:30}
+
+logging:
+  level:
+    "[com.premisave]": DEBUG
+    "[org.springframework.data.mongodb]": WARN
