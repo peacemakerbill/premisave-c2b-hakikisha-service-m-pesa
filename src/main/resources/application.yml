@@ -8,13 +8,8 @@ spring:
     # is absent (e.g. in Docker/K8s, where real environment variables are used instead).
     import: optional:file:./.env[.properties]
 
-  # Boot 4 moved the connection settings to spring.mongodb.*; the spring.data.mongodb.*
-  # line is kept so the same URI is picked up on older property layouts too.
   mongodb:
     uri: ${MONGODB_URI:mongodb://localhost:27017/premisave-c2b-hakikisha}
-  data:
-    mongodb:
-      uri: ${MONGODB_URI:mongodb://localhost:27017/premisave-c2b-hakikisha}
 
 server:
   port: ${SERVER_PORT:8090}

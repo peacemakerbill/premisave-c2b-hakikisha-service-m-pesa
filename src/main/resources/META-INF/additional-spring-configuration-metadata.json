@@ -1,0 +1,15 @@
+{
+  "properties": [
+    {
+      "name": "wallet.service.url",
+      "type": "java.lang.String",
+      "description": "Base URL of the wallet service. The sync job calls GET {url}/internal/accounts to pull account and name data.",
+      "defaultValue": "http://localhost:8084"
+    },
+    {
+      "name": "internal.api-key",
+      "type": "java.lang.String",
+      "description": "Shared secret sent as the X-API-Key header on calls to the wallet service's /internal/** endpoints. Must match the wallet service's INTERNAL_API_KEY."
+    }
+  ]
+}
