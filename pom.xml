@@ -15,6 +15,9 @@
 	<description>C2B Hakikisha/Name Lookup</description>
 	<properties>
 		<java.version>21</java.version>
+		<!-- Workaround for the m2e "Cannot access session scope outside of a scoping block" error
+		     seen with maven-jar-plugin 3.5.0 in Eclipse/STS. Remove once m2e is updated. -->
+		<maven-jar-plugin.version>3.4.2</maven-jar-plugin.version>
 	</properties>
 	<dependencies>
 		<dependency>
