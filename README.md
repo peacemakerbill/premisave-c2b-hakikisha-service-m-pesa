@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://capsule-render.vercel.app/api?type=waving&color=00A651&height=180&section=header&text=C2B%20Hakikisha&fontSize=56&fontColor=ffffff&desc=M-Pesa%20account%20name%20lookup%20microservice&descSize=18&animation=fadeIn" alt="C2B Hakikisha - M-Pesa account name lookup microservice banner" />
+  <img src="https://capsule-render.vercel.app/api?type=waving&color=00A651&height=240&section=header&text=C2B%20Hakikisha&fontSize=58&fontColor=ffffff&fontAlignY=34&desc=M-Pesa%20account%20name%20lookup%20microservice&descSize=20&descAlignY=58&animation=fadeIn" alt="C2B Hakikisha - M-Pesa account name lookup microservice banner" />
 </p>
 
 <h1 align="center">C2B Hakikisha API: M-Pesa Name Lookup Microservice</h1>
