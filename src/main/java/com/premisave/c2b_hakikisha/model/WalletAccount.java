@@ -3,12 +3,13 @@ package com.premisave.c2b_hakikisha.model;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
  * Local copy of a wallet-service account, used to answer C2B Hakikisha name lookups.
- * The document id is the lower-cased account number so lookups are case-insensitive
- * (account numbers are e-mail addresses, and customers type them in any case).
+ * The document id is the lower-cased wallet account number (an e-mail address); name lookups from
+ * Safaricom search by the account's M-Pesa phone number instead (see mpesaPhoneKey).
  */
 @Document(collection = "wallet_accounts")
 public class WalletAccount {
@@ -22,6 +23,10 @@ public class WalletAccount {
     private boolean frozen;
 
     private String mpesaPhoneNumber;
+
+    /** mpesaPhoneNumber normalised to 254XXXXXXXXX; this is what name lookups search on. */
+    @Indexed
+    private String mpesaPhoneKey;
     private String pochiPhoneNumber;
     private String paypalEmail;
     private String paypalConnectedEmail;
@@ -50,6 +55,8 @@ public class WalletAccount {
     public void setFullName(String fullName) { this.fullName = fullName; }
     public boolean isFrozen() { return frozen; }
     public void setFrozen(boolean frozen) { this.frozen = frozen; }
+    public String getMpesaPhoneKey() { return mpesaPhoneKey; }
+    public void setMpesaPhoneKey(String v) { this.mpesaPhoneKey = v; }
     public String getMpesaPhoneNumber() { return mpesaPhoneNumber; }
     public void setMpesaPhoneNumber(String v) { this.mpesaPhoneNumber = v; }
     public String getPochiPhoneNumber() { return pochiPhoneNumber; }

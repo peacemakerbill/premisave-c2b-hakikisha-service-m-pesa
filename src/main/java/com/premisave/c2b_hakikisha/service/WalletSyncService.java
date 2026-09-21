@@ -6,6 +6,7 @@ import com.premisave.c2b_hakikisha.dto.WalletAccountDto;
 import com.premisave.c2b_hakikisha.dto.WalletAccountsResponse;
 import com.premisave.c2b_hakikisha.model.WalletAccount;
 import com.premisave.c2b_hakikisha.repository.WalletAccountRepository;
+import com.premisave.c2b_hakikisha.util.PhoneNumbers;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -89,6 +90,7 @@ public class WalletSyncService {
         doc.setFullName(dto.fullName());
         doc.setFrozen(Boolean.TRUE.equals(dto.frozen()));
         doc.setMpesaPhoneNumber(dto.mpesaPhoneNumber());
+        doc.setMpesaPhoneKey(PhoneNumbers.normalizeMsisdn(dto.mpesaPhoneNumber()));
         doc.setPochiPhoneNumber(dto.pochiPhoneNumber());
         doc.setPaypalEmail(dto.paypalEmail());
         doc.setPaypalConnectedEmail(dto.paypalConnectedEmail());

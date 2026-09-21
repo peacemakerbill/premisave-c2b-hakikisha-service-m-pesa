@@ -10,6 +10,10 @@ spring:
 
   mongodb:
     uri: ${MONGODB_URI:mongodb://localhost:27017/premisave-c2b-hakikisha}
+  data:
+    mongodb:
+      # Creates the index on wallet_accounts.mpesaPhoneKey that name lookups use.
+      auto-index-creation: true
 
 server:
   port: ${SERVER_PORT:8090}
@@ -33,8 +37,8 @@ hakikisha:
   # Credentials Safaricom uses against POST /oauth2/v1/generate (Basic Auth).
   # No defaults on purpose: the service refuses to start if they are missing.
   auth:
-    username: ${HAKIKISHA_USERNAME:graham218}
-    password: ${HAKIKISHA_PASSWORD:graham218}
+    username: ${HAKIKISHA_USERNAME}
+    password: ${HAKIKISHA_PASSWORD}
     # Lifetime of an issued access token, in seconds (returned as expires_in).
     token-ttl-seconds: ${HAKIKISHA_TOKEN_TTL_SECONDS:3599}
 
