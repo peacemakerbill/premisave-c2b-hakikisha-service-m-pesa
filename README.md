@@ -92,6 +92,7 @@ It was built for the [Premisave](https://github.com/peacemakerbill?tab=repositor
 | **Safaricom-spec endpoints** | Token endpoint (Basic Auth to Bearer token) and name lookup, using the documented request/response shapes and HTTP status codes (200, 400, 422, 500). |
 | **Phone number as account number** | `2547XXXXXXXX`, `+2547XXXXXXXX`, `07XXXXXXXX`, `01XXXXXXXX` and bare 9-digit forms all resolve to the same account. |
 | **Fast local lookups** | Indexed MongoDB collection; no upstream call on the hot path. |
+| **Internal account listing** | `GET /internal/accounts` pages through everything saved, protected by the shared `X-API-Key` (never by Safaricom's token). |
 | **Self-healing sync** | Runs on startup and on a fixed delay you control. A failed run never deletes data and never stops the scheduler. |
 | **Safe by default** | Frozen accounts, unknown numbers, nameless accounts and ambiguous (shared) numbers are all reported as *Invalid account number*. |
 | **Readable operations** | One-line, human-friendly log messages for "wallet offline", "wrong API key", "bad credentials" and recovery. |
@@ -265,7 +266,7 @@ Every setting lives in `src/main/resources/application.yml` and can be overridde
 | `SERVER_PORT` | `8090` | no | HTTP port. |
 | `MONGODB_URI` | `mongodb://localhost:27017/premisave-c2b-hakikisha` | no | MongoDB connection string. |
 | `WALLET_SERVICE_URL` | `http://localhost:8084` | no | Base URL of the wallet service. |
-| `INTERNAL_API_KEY` | none | **yes** | Sent as `X-API-Key` to the wallet service's `/internal/**` endpoints. |
+| `INTERNAL_API_KEY` | none | **yes** | Sent as `X-API-Key` to the wallet service's `/internal/**` endpoints, and also required by this service's own `/internal/**` endpoints. |
 | `HAKIKISHA_SHORTCODE` | `600992` | no | Paybill shortcode. Requests with any other shortcode are rejected. |
 | `HAKIKISHA_USERNAME` | none | **yes** | Basic Auth username Safaricom uses on the token endpoint. |
 | `HAKIKISHA_PASSWORD` | none | **yes** | Basic Auth password Safaricom uses on the token endpoint. |
@@ -337,6 +338,54 @@ Other outcomes:
 | `401` (bad or missing token) | `{"errorCode":"401","errorMessage":"Missing or invalid access token"}` or `"Invalid or expired access token"` |
 | `500` | `{"requestId":"...","errorMessage":"Internal server error"}` |
 
+### `GET /internal/accounts`: list saved accounts
+
+Lists everything the wallet sync has saved in MongoDB. Handy for checking that a sync worked and for finding out *why* a phone number returns "Invalid account number".
+
+| | |
+|---|---|
+| **Header** | `X-API-Key: <INTERNAL_API_KEY>` (the shared key, **not** the Safaricom Bearer token) |
+| **Query** | `page` (default `0`), `size` (default `20`, max `200`), `frozen` (optional: `true` or `false`) |
+
+Response (`200`), in the same envelope as the wallet service:
+
+```json
+{
+  "success": true,
+  "message": "Saved accounts retrieved",
+  "data": {
+    "content": [
+      {
+        "userId": "…",
+        "accountNumber": "user@example.com",
+        "fullName": "Jane Wanjiru Mwangi",
+        "frozen": false,
+        "mpesaPhoneNumber": "254712345678",
+        "mpesaPhoneKey": "254712345678",
+        "pochiPhoneNumber": null,
+        "paypalEmail": null,
+        "paypalConnectedEmail": null,
+        "stripeConnected": false,
+        "stripePayoutsEnabled": false,
+        "flutterwavePaymentMethodNetwork": null,
+        "flutterwavePaymentMethodPhone": null,
+        "createdAt": "2026-08-29T01:49:29.921",
+        "lastSyncedAt": "2026-09-21T10:15:00Z"
+      }
+    ],
+    "page": { "size": 20, "number": 0, "totalElements": 1, "totalPages": 1 }
+  },
+  "timestamp": "2026-09-21T10:15:42.123"
+}
+```
+
+| Status | Body |
+|---|---|
+| `200` | The envelope above. Results are sorted by account id, so paging is stable. |
+| `401` | `{"errorCode":"401","errorMessage":"Invalid or missing API key"}` |
+
+This endpoint returns personal data (names, phone numbers, e-mails). Keep it on your internal network and never share the `INTERNAL_API_KEY` with Safaricom.
+
 ## Testing with Postman or curl
 
 ### curl
@@ -395,6 +444,12 @@ pm.collectionVariables.set("hakikisha_access_token", pm.response.json().access_t
   "shortcode": "{{hakikisha_shortcode}}"
 }
 ```
+
+**Request 3: List Saved Accounts**
+
+- `GET {{base_url_c2b_hakikisha}}/internal/accounts?page=0&size=20`
+- Header: `X-API-Key: {{INTERNAL_API_KEY}}` (reuse the variable from your wallet-service requests)
+- Optional query: `frozen=true` or `frozen=false`
 
 **Error-case requests worth saving**
 
@@ -522,7 +577,7 @@ Accounts live in the `wallet_accounts` collection (`WalletAccount`):
 - **Multiple instances:** because tokens are in memory, a token issued by one instance is not valid on another. Run a single instance, use sticky routing for the two endpoints, or add a shared token store before scaling horizontally.
 - `.env` is git-ignored. If it was ever committed, remove it from the index (`git rm --cached .env`) and **rotate** the values.
 - Terminate TLS in front of the service. Basic Auth and Bearer tokens must never travel over plain HTTP outside local development.
-- The lookup exposes only the account **name** to an authenticated caller. Other wallet fields (phones, e-mails, provider details) are stored but never returned.
+- The name lookup exposes only the account **name** to Safaricom. Other wallet fields (phones, e-mails, provider details) are stored, and are only readable through `GET /internal/accounts`, which needs the shared `X-API-Key`. The Safaricom Bearer token cannot access it.
 
 ## Project structure
 
@@ -536,13 +591,13 @@ premisave-c2b-hakikisha-service-m-pesa
     │   ├── PremisaveC2bHakikishaServiceMPesaApplication.java
     │   ├── client/WalletServiceClient.java        # calls wallet-service /internal/accounts
     │   ├── config/                                # AppConfig, HakikishaProperties (validated)
-    │   ├── controller/                            # TokenController, NameLookupController
+    │   ├── controller/                            # TokenController, NameLookupController, InternalAccountsController
     │   ├── dto/                                   # request/response records
     │   ├── exception/                             # ApiException, AuthException, GlobalExceptionHandler
     │   ├── model/WalletAccount.java               # Mongo document
     │   ├── repository/WalletAccountRepository.java
-    │   ├── security/                              # TokenService, BearerAuthInterceptor
-    │   ├── service/                               # NameLookupService, WalletSyncService, WalletSyncScheduler
+    │   ├── security/                              # TokenService, BearerAuthInterceptor, InternalApiKeyInterceptor
+    │   ├── service/                               # NameLookupService, AccountListService, WalletSyncService, WalletSyncScheduler
     │   └── util/PhoneNumbers.java                 # MSISDN normalisation
     └── resources
         ├── application.yml
