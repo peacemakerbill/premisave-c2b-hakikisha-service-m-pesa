@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-/** Lists the accounts saved by the wallet sync. Protected by X-API-Key (see InternalApiKeyInterceptor). */
+/** Lists the accounts saved by the wallet sync. Protected by the Bearer interceptor (see AppConfig). */
 @RestController
 @RequestMapping("/internal/accounts")
 public class InternalAccountsController {

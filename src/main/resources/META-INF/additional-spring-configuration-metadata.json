@@ -9,7 +9,7 @@
     {
       "name": "internal.api-key",
       "type": "java.lang.String",
-      "description": "Shared secret sent as the X-API-Key header on calls to the wallet service's /internal/** endpoints, and required by this service's own /internal/** endpoints. Must match the wallet service's INTERNAL_API_KEY."
+      "description": "Shared secret sent as the X-API-Key header on calls to the wallet service's /internal/** endpoints. Used only by the sync job. Must match the wallet service's INTERNAL_API_KEY."
     }
   ]
 }
