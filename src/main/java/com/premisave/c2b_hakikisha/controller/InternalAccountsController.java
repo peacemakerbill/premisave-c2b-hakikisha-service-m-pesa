@@ -22,9 +22,9 @@ public class InternalAccountsController {
 
     @GetMapping
     public ApiEnvelope<PageResult<SavedAccountDto>> list(
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "20") int size,
-            @RequestParam(name = "frozen", required = false) Boolean frozen) {
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(required = false) Boolean frozen) {
 
         return ApiEnvelope.ok("Saved accounts retrieved", accountListService.list(page, size, frozen));
     }
