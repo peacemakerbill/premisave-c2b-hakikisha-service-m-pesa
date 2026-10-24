@@ -377,7 +377,7 @@ table.data tr:hover td{background:var(--sunken);}
     <h3>Base URL &amp; defaults</h3>
     <div class="sub">Stored only in this browser (localStorage). Nothing is sent anywhere else.</div>
     <div class="field"><label class="fl">C2B Hakikisha base URL</label><input class="inp" id="cfgBaseUrl" placeholder="http://localhost:8090"></div>
-    <div class="hint">The service's own <span class="mono">application.yml</span> defaults <span class="mono">SERVER_PORT</span> to <b>8090</b>. If your Postman environment points at a different port (some have used 8087), match whichever port the service is actually running on.</div>
+    <div class="hint">Use the same host and port as <span class="mono">base_url_c2b_hakikisha</span> in your Postman environment. The service's <span class="mono">SERVER_PORT</span> defaults to 8090 if you have not set it in <span class="mono">.env</span>. A browser also needs the service to allow cross-origin calls (<span class="mono">CORS_ALLOWED_ORIGINS</span>, default <span class="mono">*</span>), which Postman does not need.</div>
     <div class="row" style="margin-top:18px;justify-content:flex-end;">
       <button class="btn ghost" onclick="closeSettings()">Cancel</button>
       <button class="btn primary" onclick="saveSettings()">Save</button>
@@ -502,7 +502,10 @@ async function onGenerateToken(ev){
   btn.disabled = false;
   renderResult('result-token', r);
   if (!r.ok || !r.data || !r.data.access_token){
-    banner('tokenBanner', (r.data && r.data.errorMessage) || 'Token generation failed. Check the username/password and base URL.', false);
+    const msg = r.status === 0
+      ? 'Could not reach ' + CONFIG.baseUrl + '. Either nothing is listening on that port (compare it with base_url_c2b_hakikisha in Postman) or the browser blocked the request because the service does not allow cross-origin calls (CORS). Open the activity log for the exact error.'
+      : ((r.data && r.data.errorMessage) || 'Token generation failed with HTTP ' + r.status + '.');
+    banner('tokenBanner', msg, false);
     return false;
   }
   SESSION = { accessToken: r.data.access_token, expiresIn: parseInt(r.data.expires_in, 10) || 0, issuedAt: Date.now(), username };
