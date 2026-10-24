@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>C2B Hakikisha &middot; Test Console</title>
+<style>
+:root{
+  color-scheme:light;
+  --bg:#f3f6f4; --surface:#ffffff; --surface-2:#f7faf8; --sunken:#eef3f0;
+  --ink:#10241c; --ink-2:#4b6358; --ink-3:#86998e;
+  --line:#e0eae3; --line-2:#c9d8ce;
+  --brand:#00a651; --brand-ink:#ffffff; --brand-dk:#048445; --brand-tint:#e4f6ee;
+  --gold:#c88a1c; --gold-tint:#fbf1dd;
+  --good:#128a5a; --good-tint:#e3f6ec;
+  --bad:#c23a2c; --bad-tint:#fbe9e6;
+  --code-bg:#0e1b15; --code-ink:#d9f0e3;
+  --ring:0 0 0 3px rgba(0,166,81,.18);
+  --shadow:0 1px 2px rgba(16,36,28,.06), 0 1px 1px rgba(16,36,28,.04);
+  --pop:0 20px 48px rgba(16,36,28,.22);
+  --sans:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --mono:ui-monospace,"JetBrains Mono","SF Mono","Cascadia Mono",Menlo,Consolas,monospace;
+  --r-sm:8px; --r-md:12px; --r-lg:18px; --r-xl:26px;
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#07120d; --surface:#0e1c16; --surface-2:#122219; --sunken:#0a1712;
+  --ink:#e7f3ec; --ink-2:#9fb8ab; --ink-3:#5e7a6d;
+  --line:#1b3025; --line-2:#264436;
+  --brand:#2bd98f; --brand-ink:#04140e; --brand-dk:#22b67a; --brand-tint:#102a1f;
+  --gold:#e3b25b; --gold-tint:#2c2412;
+  --good:#3fe0a0; --good-tint:#0f2a1f;
+  --bad:#ff8b78; --bad-tint:#2c1613;
+  --code-bg:#061009; --code-ink:#c9ead9;
+  --shadow:none; --pop:0 20px 48px rgba(0,0,0,.55);
+}
+*{box-sizing:border-box;}
+html,body{height:100%;margin:0;}
+body{font:14px/1.5 var(--sans);background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;letter-spacing:-.003em;}
+h1,h2,h3,h4{margin:0;font-weight:650;letter-spacing:-.015em;}
+button,input,select,textarea{font:inherit;color:inherit;}
+button{cursor:pointer;}
+a{color:var(--brand-dk);}
+:root[data-theme="dark"] a{color:var(--brand);}
+.hide{display:none !important;}
+.mono{font-family:var(--mono);font-size:12.5px;letter-spacing:0;}
+.muted{color:var(--ink-2);}
+.small{font-size:12px;}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;height:38px;padding:0 16px;border-radius:var(--r-md);border:1px solid var(--line-2);background:var(--surface);font-weight:600;box-shadow:var(--shadow);transition:transform .08s,background .12s;white-space:nowrap;}
+.btn:hover{background:var(--surface-2);}
+.btn:active{transform:translateY(1px);}
+.btn.primary{background:var(--brand);color:var(--brand-ink);border-color:var(--brand);}
+.btn.primary:hover{background:var(--brand-dk);}
+.btn.danger{color:var(--bad);border-color:var(--bad);}
+.btn.danger:hover{background:var(--bad-tint);}
+.btn.ghost{border-color:transparent;background:transparent;box-shadow:none;color:var(--ink-2);}
+.btn.ghost:hover{background:var(--sunken);color:var(--ink);}
+.btn.sm{height:30px;padding:0 11px;font-size:12.5px;border-radius:8px;}
+.btn.block{width:100%;}
+.btn[disabled]{opacity:.55;cursor:not-allowed;}
+.icon-btn{display:inline-grid;place-items:center;width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--ink-2);}
+.icon-btn:hover{background:var(--sunken);color:var(--ink);}
+label.fl{display:block;font-size:12.5px;font-weight:650;color:var(--ink-2);margin:0 0 6px;}
+label.fl .req{color:var(--bad);margin-left:2px;}
+.inp,select.inp,textarea.inp{width:100%;height:38px;padding:0 12px;border:1px solid var(--line-2);border-radius:var(--r-md);background:var(--surface);transition:border-color .12s,box-shadow .12s;}
+.inp::placeholder{color:var(--ink-3);}
+.inp:focus{border-color:var(--brand);box-shadow:var(--ring);outline:none;}
+.field{margin-bottom:13px;}
+.hint{font-size:12px;color:var(--ink-3);margin-top:5px;}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:13px;}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:13px;}
+@media (max-width:720px){.grid-2,.grid-3{grid-template-columns:1fr;}}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+.spacer{flex:1;}
+
+.pill{display:inline-flex;align-items:center;gap:5px;height:22px;padding:0 9px;border-radius:999px;font-size:11.5px;font-weight:700;background:var(--sunken);color:var(--ink-2);white-space:nowrap;}
+.pill.good{background:var(--good-tint);color:var(--good);}
+.pill.bad{background:var(--bad-tint);color:var(--bad);}
+.pill.brand{background:var(--brand-tint);color:var(--brand-dk);}
+:root[data-theme="dark"] .pill.brand{color:var(--brand);}
+.pill.gold{background:var(--gold-tint);color:var(--gold);}
+.method{font-family:var(--mono);font-size:11px;font-weight:700;padding:2px 7px;border-radius:6px;}
+.method.get{background:#e3eefb;color:#1d5fd1;}
+.method.post{background:var(--good-tint);color:var(--good);}
+:root[data-theme="dark"] .method.get{background:#0e2238;color:#7fb2ff;}
+
+.auth-screen{min-height:100vh;display:grid;grid-template-columns:1fr 1fr;background:
+  radial-gradient(1200px 700px at 15% 10%, var(--brand-tint), transparent 60%),
+  radial-gradient(900px 600px at 90% 90%, var(--brand-tint), transparent 55%),
+  var(--bg);}
+@media (max-width:860px){.auth-screen{grid-template-columns:1fr;}}
+.auth-pitch{display:flex;flex-direction:column;justify-content:center;padding:60px 56px;}
+.auth-pitch .mark{display:flex;align-items:center;gap:12px;margin-bottom:34px;}
+.auth-pitch .mark .logo{width:44px;height:44px;border-radius:13px;background:var(--brand);color:var(--brand-ink);display:grid;place-items:center;font-weight:800;font-size:16px;}
+.auth-pitch h1{font-size:28px;line-height:1.25;max-width:460px;}
+.auth-pitch p{color:var(--ink-2);max-width:440px;margin-top:14px;}
+.auth-pitch .pitch-list{margin-top:28px;display:flex;flex-direction:column;gap:14px;}
+.auth-pitch .pitch-item{display:flex;gap:12px;align-items:flex-start;}
+.auth-pitch .pitch-item .ic{width:30px;height:30px;border-radius:9px;background:var(--surface);border:1px solid var(--line);display:grid;place-items:center;flex:none;color:var(--brand-dk);font-weight:800;}
+.auth-pitch .pitch-item b{display:block;font-size:13.5px;}
+.auth-pitch .pitch-item span{font-size:12.5px;color:var(--ink-2);}
+@media (max-width:860px){.auth-pitch{display:none;}}
+.auth-panel{display:flex;align-items:center;justify-content:center;padding:36px;}
+.auth-card{width:100%;max-width:400px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-xl);padding:30px;box-shadow:var(--pop);}
+.auth-card h2{font-size:19px;}
+.auth-card .sub{color:var(--ink-2);font-size:12.5px;margin-top:4px;margin-bottom:22px;}
+.banner{border-radius:var(--r-md);padding:11px 13px;font-size:12.5px;margin-bottom:14px;display:none;}
+.banner.show{display:block;}
+.banner.err{background:var(--bad-tint);color:var(--bad);}
+.banner.ok{background:var(--good-tint);color:var(--good);}
+.auth-foot{margin-top:18px;text-align:center;font-size:12px;color:var(--ink-3);}
+.auth-foot button{background:none;border:none;color:var(--brand-dk);font-weight:650;cursor:pointer;padding:0;}
+.env-chip{position:fixed;bottom:18px;left:18px;right:18px;max-width:380px;margin:0 auto;display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:7px 8px 7px 14px;box-shadow:var(--shadow);font-size:11.5px;color:var(--ink-2);}
+.env-chip b{color:var(--ink);font-weight:650;}
+@media (min-width:861px){.env-chip{left:auto;right:36px;bottom:30px;max-width:340px;}}
+
+#app{min-height:100vh;display:flex;flex-direction:column;}
+.topbar{height:62px;flex:none;display:flex;align-items:center;gap:14px;padding:0 20px;background:var(--surface);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:30;}
+.topbar .mark{display:flex;align-items:center;gap:10px;font-weight:700;}
+.topbar .mark .logo{width:30px;height:30px;border-radius:9px;background:var(--brand);color:var(--brand-ink);display:grid;place-items:center;font-weight:800;font-size:12px;flex:none;}
+.topbar .mark small{display:block;font-weight:500;font-size:10.5px;color:var(--ink-3);}
+.token-pill{display:flex;align-items:center;gap:9px;background:var(--brand-tint);border:1px solid var(--line);border-radius:999px;padding:5px 13px;}
+.token-pill.expiring{background:var(--bad-tint);}
+.token-pill .amt{font-weight:800;font-family:var(--mono);color:var(--brand-dk);}
+:root[data-theme="dark"] .token-pill .amt{color:var(--brand);}
+.token-pill.expiring .amt{color:var(--bad);}
+.cred-chip{display:flex;align-items:center;gap:9px;background:var(--sunken);border-radius:999px;padding:5px 12px 5px 6px;cursor:pointer;border:1px solid transparent;}
+.cred-chip:hover{border-color:var(--line-2);}
+.cred-chip .av{width:26px;height:26px;border-radius:50%;background:var(--brand);color:var(--brand-ink);display:grid;place-items:center;font-weight:700;font-size:11.5px;flex:none;}
+.cred-chip .meta{line-height:1.2;}
+.cred-chip .meta .em{font-size:12px;font-weight:650;}
+.cred-chip .meta .rl{font-size:10.5px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.04em;}
+.menu-wrap{position:relative;}
+.menu{position:absolute;right:0;top:calc(100% + 8px);background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);box-shadow:var(--pop);min-width:190px;padding:6px;z-index:40;}
+.menu button{display:flex;width:100%;align-items:center;gap:9px;border:none;background:none;text-align:left;padding:9px 10px;border-radius:8px;font-size:13px;font-weight:550;}
+.menu button:hover{background:var(--sunken);}
+.menu button.danger{color:var(--bad);}
+.menu hr{border:none;border-top:1px solid var(--line);margin:5px 0;}
+
+.tabbar{flex:none;display:flex;gap:6px;padding:10px 20px;background:var(--surface);border-bottom:1px solid var(--line);overflow-x:auto;position:sticky;top:62px;z-index:20;}
+.tabbar button{flex:none;border:1px solid transparent;background:transparent;height:34px;padding:0 14px;border-radius:999px;font-weight:650;font-size:13px;color:var(--ink-2);}
+.tabbar button:hover{background:var(--sunken);}
+.tabbar button.active{background:var(--brand);color:var(--brand-ink);}
+
+.content{flex:1;padding:26px 20px 70px;max-width:1080px;width:100%;margin:0 auto;}
+.view{display:flex;flex-direction:column;gap:20px;}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:20px;}
+.card-head{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+.card-head h3{font-size:14.5px;}
+.card-head .sub{font-size:12px;color:var(--ink-3);margin-top:2px;}
+.cards-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+@media (max-width:860px){.cards-grid{grid-template-columns:1fr 1fr;}}
+@media (max-width:560px){.cards-grid{grid-template-columns:1fr;}}
+
+.hero{background:linear-gradient(135deg,var(--brand-dk),var(--brand));color:var(--brand-ink);border-radius:var(--r-xl);padding:26px 26px 22px;position:relative;overflow:hidden;}
+.hero::after{content:"";position:absolute;right:-60px;top:-60px;width:220px;height:220px;border-radius:50%;background:rgba(255,255,255,.08);}
+.hero .lbl{font-size:12px;opacity:.85;font-weight:650;letter-spacing:.02em;}
+.hero .amt{font-size:30px;font-weight:800;font-family:var(--mono);margin-top:6px;letter-spacing:-.01em;word-break:break-all;}
+.hero .row{margin-top:16px;}
+.hero .pill{background:rgba(255,255,255,.16);color:#fff;}
+
+.stat{border:1px solid var(--line);border-radius:var(--r-lg);padding:16px;background:var(--surface-2);}
+.stat .lbl{font-size:11.5px;color:var(--ink-3);font-weight:650;text-transform:uppercase;letter-spacing:.03em;}
+.stat .val{font-size:18px;font-weight:750;margin-top:6px;font-family:var(--mono);}
+
+.result{margin-top:14px;border-radius:var(--r-md);overflow:hidden;border:1px solid var(--line);}
+.result .bar{display:flex;align-items:center;gap:9px;padding:9px 12px;font-size:12px;font-weight:650;}
+.result.ok .bar{background:var(--good-tint);color:var(--good);}
+.result.bad .bar{background:var(--bad-tint);color:var(--bad);}
+.result pre{margin:0;background:var(--code-bg);color:var(--code-ink);padding:13px;font-size:12px;max-height:280px;overflow:auto;}
+.panel-note{background:var(--gold-tint);color:var(--gold);border-radius:var(--r-md);padding:10px 12px;font-size:12px;margin-bottom:16px;}
+.result-headline{text-align:center;padding:18px 10px;border-radius:var(--r-md);background:var(--brand-tint);margin-bottom:14px;}
+.result-headline .nm{font-size:22px;font-weight:800;color:var(--brand-dk);}
+:root[data-theme="dark"] .result-headline .nm{color:var(--brand);}
+.result-headline .sm{font-size:12px;color:var(--ink-2);margin-top:4px;}
+table.data{width:100%;border-collapse:collapse;font-size:12.5px;}
+table.data th{text-align:left;color:var(--ink-3);font-weight:650;font-size:11px;text-transform:uppercase;letter-spacing:.03em;padding:8px 10px;border-bottom:1px solid var(--line);}
+table.data td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top;}
+table.data tr:last-child td{border-bottom:none;}
+table.data tr:hover td{background:var(--sunken);}
+.empty-state{padding:30px 10px;text-align:center;color:var(--ink-3);font-size:13px;}
+.scroll-x{overflow-x:auto;}
+
+.overlay{position:fixed;inset:0;background:rgba(10,20,15,.42);z-index:50;}
+.drawer{position:fixed;top:0;right:0;height:100%;width:420px;max-width:92vw;background:var(--surface);border-left:1px solid var(--line);box-shadow:var(--pop);z-index:60;display:flex;flex-direction:column;}
+.drawer .dh{display:flex;align-items:center;gap:10px;padding:16px 18px;border-bottom:1px solid var(--line);}
+.drawer .dh h3{font-size:14px;flex:1;}
+.drawer .dlist{flex:1;overflow:auto;padding:10px;}
+.log-item{border:1px solid var(--line);border-radius:10px;padding:10px 11px;margin-bottom:8px;}
+.log-item .lh{display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--ink-3);margin-bottom:5px;}
+.log-item .url{font-family:var(--mono);font-size:11.5px;word-break:break-all;color:var(--ink-2);}
+.log-item details summary{font-size:11.5px;color:var(--brand-dk);cursor:pointer;margin-top:6px;font-weight:650;}
+.log-item pre{margin:6px 0 0;background:var(--sunken);border-radius:7px;padding:8px;font-size:11px;max-height:160px;overflow:auto;}
+
+.modal-wrap{position:fixed;inset:0;z-index:70;display:flex;align-items:center;justify-content:center;padding:20px;}
+.modal{background:var(--surface);border-radius:var(--r-lg);padding:24px;width:100%;max-width:440px;box-shadow:var(--pop);max-height:88vh;overflow:auto;}
+.modal h3{font-size:16px;margin-bottom:4px;}
+.modal .sub{color:var(--ink-2);font-size:12.5px;margin-bottom:18px;}
+.toast-stack{position:fixed;top:18px;right:18px;z-index:90;display:flex;flex-direction:column;gap:8px;max-width:320px;}
+.toast{background:var(--ink);color:var(--bg);border-radius:10px;padding:11px 14px;font-size:12.5px;box-shadow:var(--pop);}
+:root[data-theme="dark"] .toast{background:var(--surface-2);color:var(--ink);border:1px solid var(--line);}
+.toast.err{background:var(--bad);color:#fff;}
+.toast.ok{background:var(--good);color:#06160f;}
+</style>
+</head>
+<body>
+
+<div id="toastStack" class="toast-stack"></div>
+
+<!-- =========================================================
+     AUTH SCREEN  (this service's own "login" is Safaricom's
+     step 1: trade Basic-Auth credentials for an access token)
+     ========================================================= -->
+<div id="authScreen" class="auth-screen">
+  <div class="auth-pitch">
+    <div class="mark"><div class="logo">H</div><div><div style="font-weight:700;">C2B Hakikisha</div><div class="small muted">M-Pesa name-lookup test console</div></div></div>
+    <h1>Drive the C2B Hakikisha provider API from one screen.</h1>
+    <p>This is the <b>provider side</b> of Safaricom's C2B Hakikisha API &mdash; the service Safaricom itself calls to resolve an account name before a customer pays. There is no end-user account here: step one is the same Basic-Auth &rarr; Bearer token exchange Safaricom performs.</p>
+    <div class="pitch-list">
+      <div class="pitch-item"><div class="ic">1</div><div><b>Generate an access token</b><span>Basic Auth against <span class="mono">HAKIKISHA_USERNAME</span> / <span class="mono">HAKIKISHA_PASSWORD</span>, exactly like Safaricom's own client-credentials call.</span></div></div>
+      <div class="pitch-item"><div class="ic">2</div><div><b>Run a name lookup</b><span>POST an M-Pesa phone number and shortcode, get back the account name &mdash; or the same errors Safaricom would see.</span></div></div>
+      <div class="pitch-item"><div class="ic">3</div><div><b>Browse the synced directory</b><span>See exactly what the wallet-service sync job has saved, to pick a real phone number to test against.</span></div></div>
+    </div>
+  </div>
+  <div class="auth-panel">
+    <div class="auth-card">
+      <h2>Generate an access token</h2>
+      <div class="sub">POST /oauth2/v1/generate &middot; Authorization: Basic (username:password)</div>
+      <div id="tokenBanner" class="banner err"></div>
+      <form id="tokenForm" onsubmit="return onGenerateToken(event)">
+        <div class="field"><label class="fl">Username<span class="req">*</span></label><input class="inp" id="hkUsername" placeholder="HAKIKISHA_USERNAME" required></div>
+        <div class="field"><label class="fl">Password<span class="req">*</span></label><input class="inp" type="password" id="hkPassword" placeholder="HAKIKISHA_PASSWORD" required></div>
+        <div class="field"><label class="fl">grant_type <span class="hint" style="margin:0;">(fixed, per the spec)</span></label><input class="inp" value="client_credentials" disabled></div>
+        <button class="btn primary block" type="submit" id="tokenSubmit">Generate access token</button>
+      </form>
+      <div class="auth-foot">Pointing at the wrong environment? <button onclick="openSettings()">Edit base URL &amp; defaults</button></div>
+    </div>
+  </div>
+  <div class="env-chip">
+    <span>&#9881;</span>
+    <span>Service: <b id="envBaseUrl" class="mono"></b></span>
+    <button class="icon-btn" style="width:26px;height:26px;margin-left:auto;" onclick="openSettings()" title="Settings">&#8594;</button>
+  </div>
+</div>
+
+<!-- =========================================================
+     APP SHELL
+     ========================================================= -->
+<div id="app" class="hide">
+  <header class="topbar">
+    <div class="mark"><div class="logo">H</div><div><div>C2B Hakikisha</div><small>premisave-c2b-hakikisha-service</small></div></div>
+    <div class="spacer"></div>
+    <div class="token-pill" id="tokenPill" title="Access token time remaining">
+      <span class="small muted">Token</span>
+      <span class="amt" id="tokenPillAmt">&mdash;</span>
+    </div>
+    <button class="icon-btn" onclick="toggleDrawer()" title="Activity log">&#128203;</button>
+    <button class="icon-btn" onclick="toggleTheme()" title="Toggle theme"><span id="themeIcon">&#9789;</span></button>
+    <button class="icon-btn" onclick="openSettings()" title="Settings">&#9881;</button>
+    <div class="menu-wrap">
+      <div class="cred-chip" onclick="toggleCredMenu()">
+        <div class="av" id="credAvatar">H</div>
+        <div class="meta"><div class="em" id="credUserChip">&mdash;</div><div class="rl">service account</div></div>
+      </div>
+      <div class="menu hide" id="credMenu">
+        <button onclick="showView('token')">&#128273; View token</button>
+        <button onclick="regenerateToken()">&#128260; Regenerate token</button>
+        <button onclick="openSettings()">&#9881; Base URL &amp; defaults</button>
+        <hr>
+        <button class="danger" onclick="doLogout()">&#10162; Clear token / sign out</button>
+      </div>
+    </div>
+  </header>
+
+  <nav class="tabbar" id="tabbar">
+    <button data-view="token" class="active" onclick="showView('token')">Token &amp; overview</button>
+    <button data-view="lookup" onclick="showView('lookup')">Name lookup</button>
+    <button data-view="accounts" onclick="showView('accounts')">Accounts directory</button>
+  </nav>
+
+  <main class="content">
+
+    <!-- TOKEN & OVERVIEW -->
+    <section id="view-token" class="view">
+      <div class="hero">
+        <div class="lbl">ACCESS TOKEN</div>
+        <div class="amt" id="heroToken">&mdash;</div>
+        <div class="row">
+          <span class="pill" id="heroTokenStatus">&#9679; unknown</span>
+          <span class="pill" id="heroTokenTtl">expires_in &mdash;</span>
+        </div>
+      </div>
+      <div class="row">
+        <button class="btn primary" onclick="regenerateToken()">Regenerate token</button>
+        <button class="btn" onclick="copyToken()">Copy token</button>
+      </div>
+      <div class="cards-grid">
+        <div class="stat"><div class="lbl">Issued at</div><div class="val" id="statIssuedAt" style="font-size:13px;">&mdash;</div></div>
+        <div class="stat"><div class="lbl">Default shortcode</div><div class="val"><input class="inp" id="defaultShortcode" value="600992" style="height:30px;font-family:var(--mono);font-size:13px;" onchange="saveDefaultShortcode()"></div></div>
+        <div class="stat"><div class="lbl">Saved accounts (last loaded)</div><div class="val" id="statAccountCount">&mdash;</div></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div><h3>POST /oauth2/v1/generate</h3><div class="sub">Raw response from the last token request.</div></div></div>
+        <div id="result-token"></div>
+      </div>
+    </section>
+
+    <!-- NAME LOOKUP -->
+    <section id="view-lookup" class="view hide">
+      <div class="panel-note">Frozen accounts, unknown numbers, and numbers shared by more than one saved account all answer <span class="mono">Invalid account number</span> &mdash; by design, this service never guesses.</div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-head"><div><h3>Name lookup request</h3><div class="sub">POST /api/v1/c2b/hakikisha/name-lookup</div></div></div>
+          <form onsubmit="return submitLookup(event)">
+            <div class="row" style="margin-bottom:13px;">
+              <div style="flex:1;"><label class="fl">Request ID</label><input class="inp" id="lk-requestId"></div>
+              <button type="button" class="btn sm" style="margin-top:19px;" onclick="document.getElementById('lk-requestId').value=newRequestId()">New</button>
+            </div>
+            <div class="row" style="margin-bottom:13px;">
+              <div style="flex:1;"><label class="fl">Timestamp</label><input class="inp" id="lk-timestamp"></div>
+              <button type="button" class="btn sm" style="margin-top:19px;" onclick="document.getElementById('lk-timestamp').value=new Date().toISOString()">Now</button>
+            </div>
+            <div class="field"><label class="fl">Account number (M-Pesa phone)<span class="req">*</span></label><input class="inp" id="lk-accountNumber" placeholder="254705912645" required></div>
+            <div class="field"><label class="fl">Shortcode<span class="req">*</span></label><input class="inp" id="lk-shortcode" required></div>
+            <button class="btn primary block" type="submit">Send name lookup</button>
+          </form>
+        </div>
+        <div class="card">
+          <div class="card-head"><div><h3>Result</h3><div class="sub">accountName, or the error Safaricom would see</div></div></div>
+          <div id="lookupHeadline"></div>
+          <div id="result-lookup"></div>
+          <div class="hint" style="margin-top:14px;">Accepted phone formats: <span class="mono">254XXXXXXXXX</span>, <span class="mono">+254 7XX XXX XXX</span>, <span class="mono">07XXXXXXXX</span> / <span class="mono">01XXXXXXXX</span>, or a bare <span class="mono">7XXXXXXXX</span> / <span class="mono">1XXXXXXXX</span>.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ACCOUNTS DIRECTORY -->
+    <section id="view-accounts" class="view hide">
+      <div class="panel-note">This is exactly what the wallet-sync job has saved to this service's own MongoDB &mdash; it never calls wallet-service on the lookup hot path.</div>
+      <div class="card">
+        <div class="card-head">
+          <div><h3>GET /internal/accounts</h3><div class="sub">Saved accounts, paginated</div></div>
+          <div class="spacer"></div>
+        </div>
+        <form onsubmit="return loadAccounts(event)" class="row" style="margin-bottom:16px;">
+          <div style="width:90px;"><label class="fl">Page</label><input class="inp" type="number" id="acct-page" value="0"></div>
+          <div style="width:100px;"><label class="fl">Size</label><input class="inp" type="number" id="acct-size" value="20"></div>
+          <div style="width:160px;"><label class="fl">Frozen filter</label>
+            <select class="inp" id="acct-frozen"><option value="">Any</option><option value="false">Active only</option><option value="true">Frozen only</option></select>
+          </div>
+          <button class="btn primary" type="submit" style="margin-top:19px;">Load accounts</button>
+        </form>
+        <div id="result-accounts"></div>
+        <div class="row" id="acctPager" style="margin-top:14px;justify-content:flex-end;"></div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ACTIVITY LOG DRAWER -->
+<div id="drawerOverlay" class="overlay hide" onclick="toggleDrawer()"></div>
+<aside id="activityDrawer" class="drawer hide">
+  <div class="dh">
+    <h3>Activity log</h3>
+    <button class="btn sm ghost" onclick="clearLog()">Clear</button>
+    <button class="icon-btn" onclick="toggleDrawer()">&times;</button>
+  </div>
+  <div class="dlist" id="logList"><div class="empty-state">Every request this console sends will show up here.</div></div>
+</aside>
+
+<!-- SETTINGS MODAL -->
+<div id="settingsOverlay" class="overlay hide" onclick="closeSettings()"></div>
+<div id="settingsModalWrap" class="modal-wrap hide">
+  <div class="modal">
+    <h3>Base URL &amp; defaults</h3>
+    <div class="sub">Stored only in this browser (localStorage). Nothing is sent anywhere else.</div>
+    <div class="field"><label class="fl">C2B Hakikisha base URL</label><input class="inp" id="cfgBaseUrl" placeholder="http://localhost:8090"></div>
+    <div class="hint">The service's own <span class="mono">application.yml</span> defaults <span class="mono">SERVER_PORT</span> to <b>8090</b>. If your Postman environment points at a different port (some have used 8087), match whichever port the service is actually running on.</div>
+    <div class="row" style="margin-top:18px;justify-content:flex-end;">
+      <button class="btn ghost" onclick="closeSettings()">Cancel</button>
+      <button class="btn primary" onclick="saveSettings()">Save</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* =========================================================
+   CONFIG  (base URL + default shortcode, persisted locally)
+   ========================================================= */
+const CONFIG_KEY = 'c2b_hakikisha_console_config';
+const DEFAULT_CONFIG = { baseUrl: 'http://localhost:8090', shortcode: '600992' };
+let CONFIG = Object.assign({}, DEFAULT_CONFIG, JSON.parse(localStorage.getItem(CONFIG_KEY) || '{}'));
+function saveConfig(){ localStorage.setItem(CONFIG_KEY, JSON.stringify(CONFIG)); }
+
+/* =========================================================
+   SESSION  (the issued access token, this browser tab only)
+   ========================================================= */
+const SESSION_KEY = 'c2b_hakikisha_console_session';
+let SESSION = JSON.parse(sessionStorage.getItem(SESSION_KEY) || 'null');
+function saveSession(){ sessionStorage.setItem(SESSION_KEY, JSON.stringify(SESSION)); }
+function clearSession(){ SESSION = null; sessionStorage.removeItem(SESSION_KEY); }
+
+/* =========================================================
+   HTTP CLIENT + ACTIVITY LOG
+   ========================================================= */
+const ACTIVITY_LOG = [];
+
+async function api(method, url, { authMode = 'bearer', body = null, basicUser = null, basicPass = null } = {}){
+  const headers = {};
+  if (body !== null) headers['Content-Type'] = 'application/json';
+  if (authMode === 'bearer' && SESSION && SESSION.accessToken) headers['Authorization'] = 'Bearer ' + SESSION.accessToken;
+  if (authMode === 'basic') headers['Authorization'] = 'Basic ' + btoa(basicUser + ':' + basicPass);
+
+  let status = 0, data = null, ok = false, errMsg = null;
+  try{
+    const res = await fetch(url, { method, headers, body: body !== null ? JSON.stringify(body) : undefined });
+    status = res.status;
+    ok = res.ok;
+    const text = await res.text();
+    try{ data = text ? JSON.parse(text) : null; }catch(e){ data = text; }
+  }catch(e){
+    errMsg = (e && e.message) ? e.message : String(e);
+    data = { networkError: errMsg, hint: 'Could not reach ' + url + '. Check the service is running and the base URL in Settings.' };
+  }
+
+  logActivity({ method, url, authMode, body, status, ok, data, errMsg });
+  return { ok, status, data };
+}
+
+function logActivity(entry){
+  entry.at = new Date();
+  ACTIVITY_LOG.unshift(entry);
+  if (ACTIVITY_LOG.length > 100) ACTIVITY_LOG.pop();
+  renderLog();
+}
+function clearLog(){ ACTIVITY_LOG.length = 0; renderLog(); }
+function renderLog(){
+  const el = document.getElementById('logList');
+  if (!ACTIVITY_LOG.length){ el.innerHTML = '<div class="empty-state">Every request this console sends will show up here.</div>'; return; }
+  el.innerHTML = ACTIVITY_LOG.map(e => {
+    const okClass = e.errMsg ? 'bad' : (e.ok ? 'good' : 'bad');
+    const time = e.at.toLocaleTimeString();
+    return `<div class="log-item">
+      <div class="lh"><span class="method ${e.method.toLowerCase()}">${e.method}</span><span class="pill ${okClass}">${e.errMsg ? 'ERR' : e.status}</span><span class="spacer"></span><span>${time}</span></div>
+      <div class="url">${escapeHtml(e.url)}</div>
+      <details><summary>Details</summary>
+        ${e.body ? `<div class="hint">Request body</div><pre>${escapeHtml(JSON.stringify(e.body, null, 2))}</pre>` : ''}
+        <div class="hint">Response</div><pre>${escapeHtml(JSON.stringify(e.data, null, 2))}</pre>
+      </details>
+    </div>`;
+  }).join('');
+}
+function toggleDrawer(){
+  document.getElementById('activityDrawer').classList.toggle('hide');
+  document.getElementById('drawerOverlay').classList.toggle('hide');
+}
+
+/* =========================================================
+   UI HELPERS
+   ========================================================= */
+function escapeHtml(v){
+  const s = (typeof v === 'string') ? v : JSON.stringify(v, null, 2);
+  return String(s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+}
+function toast(msg, kind){
+  const el = document.createElement('div');
+  el.className = 'toast' + (kind ? ' ' + kind : '');
+  el.textContent = msg;
+  document.getElementById('toastStack').appendChild(el);
+  setTimeout(() => el.remove(), 4200);
+}
+function renderResult(containerId, result){
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  const cls = result.ok ? 'ok' : 'bad';
+  const statusLabel = result.status ? result.status : 'network error';
+  el.innerHTML = `<div class="result ${cls}">
+    <div class="bar">${result.ok ? '&#10003;' : '&#10007;'} ${statusLabel} &middot; ${result.ok ? 'success' : 'failed'}</div>
+    <pre>${escapeHtml(JSON.stringify(result.data, null, 2))}</pre>
+  </div>`;
+}
+function newRequestId(){ return 'req-' + Date.now() + '-' + Math.random().toString(16).slice(2,8); }
+
+/* =========================================================
+   AUTH SCREEN  (token = "sign in" for this provider API)
+   ========================================================= */
+function banner(id, msg, ok){
+  const el = document.getElementById(id);
+  el.textContent = msg;
+  el.className = 'banner show ' + (ok ? 'ok' : 'err');
+}
+async function onGenerateToken(ev){
+  ev.preventDefault();
+  const btn = document.getElementById('tokenSubmit');
+  btn.disabled = true;
+  const username = document.getElementById('hkUsername').value.trim();
+  const password = document.getElementById('hkPassword').value;
+  const url = CONFIG.baseUrl + '/oauth2/v1/generate?grant_type=client_credentials';
+  const r = await api('POST', url, { authMode: 'basic', basicUser: username, basicPass: password });
+  btn.disabled = false;
+  renderResult('result-token', r);
+  if (!r.ok || !r.data || !r.data.access_token){
+    banner('tokenBanner', (r.data && r.data.errorMessage) || 'Token generation failed. Check the username/password and base URL.', false);
+    return false;
+  }
+  SESSION = { accessToken: r.data.access_token, expiresIn: parseInt(r.data.expires_in, 10) || 0, issuedAt: Date.now(), username };
+  saveSession();
+  toast('Access token generated', 'ok');
+  enterApp();
+  return false;
+}
+async function regenerateToken(){
+  toggleCredMenu(true);
+  clearSession();
+  document.getElementById('app').classList.add('hide');
+  document.getElementById('authScreen').classList.remove('hide');
+  document.getElementById('hkUsername').value = '';
+  document.getElementById('hkPassword').value = '';
+  document.getElementById('hkUsername').focus();
+}
+function doLogout(){
+  clearSession();
+  document.getElementById('app').classList.add('hide');
+  document.getElementById('authScreen').classList.remove('hide');
+  toast('Token cleared');
+  toggleCredMenu(true);
+}
+function copyToken(){
+  if (!SESSION || !SESSION.accessToken) return;
+  navigator.clipboard.writeText(SESSION.accessToken).then(() => toast('Token copied', 'ok')).catch(() => toast('Could not copy', 'err'));
+}
+function toggleCredMenu(forceClose){
+  const m = document.getElementById('credMenu');
+  if (forceClose){ m.classList.add('hide'); return; }
+  m.classList.toggle('hide');
+}
+document.addEventListener('click', (e) => {
+  const wrap = document.querySelector('.menu-wrap');
+  if (wrap && !wrap.contains(e.target)) toggleCredMenu(true);
+});
+
+function enterApp(){
+  document.getElementById('authScreen').classList.add('hide');
+  document.getElementById('app').classList.remove('hide');
+  document.getElementById('credUserChip').textContent = SESSION.username || 'service account';
+  document.getElementById('credAvatar').textContent = (SESSION.username || 'H').slice(0,1).toUpperCase();
+  document.getElementById('lk-shortcode').value = CONFIG.shortcode;
+  document.getElementById('lk-requestId').value = newRequestId();
+  document.getElementById('lk-timestamp').value = new Date().toISOString();
+  document.getElementById('defaultShortcode').value = CONFIG.shortcode;
+  showView('token');
+  renderTokenViews();
+  startTokenTicker();
+}
+
+/* =========================================================
+   TOKEN COUNTDOWN
+   ========================================================= */
+let tokenTickerHandle = null;
+function startTokenTicker(){
+  if (tokenTickerHandle) clearInterval(tokenTickerHandle);
+  tokenTickerHandle = setInterval(renderTokenViews, 1000);
+}
+function renderTokenViews(){
+  if (!SESSION || !SESSION.accessToken) return;
+  const elapsed = Math.floor((Date.now() - SESSION.issuedAt) / 1000);
+  const remaining = Math.max(0, SESSION.expiresIn - elapsed);
+  const mm = Math.floor(remaining / 60), ss = remaining % 60;
+  const label = remaining > 0 ? `${mm}m ${String(ss).padStart(2,'0')}s left` : 'expired';
+  const expiring = remaining <= 60;
+
+  const pill = document.getElementById('tokenPill');
+  pill.classList.toggle('expiring', expiring);
+  document.getElementById('tokenPillAmt').textContent = label;
+
+  document.getElementById('heroToken').textContent = SESSION.accessToken;
+  const status = document.getElementById('heroTokenStatus');
+  status.textContent = remaining > 0 ? '● active' : '● expired';
+  status.className = 'pill ' + (remaining > 0 ? 'good' : 'bad');
+  document.getElementById('heroTokenTtl').textContent = 'expires_in ' + SESSION.expiresIn + 's (' + label + ')';
+  document.getElementById('statIssuedAt').textContent = new Date(SESSION.issuedAt).toLocaleString();
+}
+
+/* =========================================================
+   SETTINGS MODAL
+   ========================================================= */
+function openSettings(){
+  document.getElementById('cfgBaseUrl').value = CONFIG.baseUrl;
+  document.getElementById('settingsOverlay').classList.remove('hide');
+  document.getElementById('settingsModalWrap').classList.remove('hide');
+}
+function closeSettings(){
+  document.getElementById('settingsOverlay').classList.add('hide');
+  document.getElementById('settingsModalWrap').classList.add('hide');
+}
+function saveSettings(){
+  CONFIG.baseUrl = document.getElementById('cfgBaseUrl').value.trim().replace(/\/$/,'') || DEFAULT_CONFIG.baseUrl;
+  saveConfig();
+  renderEnvChip();
+  closeSettings();
+  toast('Settings saved', 'ok');
+}
+function saveDefaultShortcode(){
+  CONFIG.shortcode = document.getElementById('defaultShortcode').value.trim() || DEFAULT_CONFIG.shortcode;
+  saveConfig();
+  const lk = document.getElementById('lk-shortcode');
+  if (lk && !lk.value) lk.value = CONFIG.shortcode;
+}
+function renderEnvChip(){
+  document.getElementById('envBaseUrl').textContent = CONFIG.baseUrl;
+}
+
+/* =========================================================
+   THEME
+   ========================================================= */
+function toggleTheme(){
+  const html = document.documentElement;
+  const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  html.setAttribute('data-theme', next);
+  localStorage.setItem('c2b_hakikisha_console_theme', next);
+  document.getElementById('themeIcon').innerHTML = next === 'dark' ? '&#9728;' : '&#9789;';
+}
+(function initTheme(){
+  const saved = localStorage.getItem('c2b_hakikisha_console_theme');
+  if (saved) document.documentElement.setAttribute('data-theme', saved);
+})();
+
+/* =========================================================
+   VIEW ROUTER
+   ========================================================= */
+function showView(view){
+  document.querySelectorAll('.view').forEach(v => v.classList.add('hide'));
+  document.getElementById('view-' + view).classList.remove('hide');
+  document.querySelectorAll('#tabbar button').forEach(b => b.classList.toggle('active', b.dataset.view === view));
+  toggleCredMenu(true);
+}
+
+/* =========================================================
+   NAME LOOKUP
+   ========================================================= */
+async function submitLookup(ev){
+  ev.preventDefault();
+  const body = {
+    requestId: document.getElementById('lk-requestId').value.trim() || newRequestId(),
+    timestamp: document.getElementById('lk-timestamp').value.trim() || new Date().toISOString(),
+    accountNumber: document.getElementById('lk-accountNumber').value.trim(),
+    shortcode: document.getElementById('lk-shortcode').value.trim()
+  };
+  const r = await api('POST', CONFIG.baseUrl + '/api/v1/c2b/hakikisha/name-lookup', { body });
+  renderResult('result-lookup', r);
+  const headline = document.getElementById('lookupHeadline');
+  if (r.ok && r.data && r.data.accountName){
+    headline.innerHTML = `<div class="result-headline"><div class="nm">${escapeHtml(r.data.accountName)}</div><div class="sm">account ${escapeHtml(r.data.accountNumber || body.accountNumber)} &middot; shortcode ${escapeHtml(r.data.shortcode || body.shortcode)}</div></div>`;
+  } else {
+    const msg = (r.data && r.data.errorMessage) ? r.data.errorMessage : 'Lookup failed';
+    headline.innerHTML = `<div class="result-headline" style="background:var(--bad-tint);"><div class="nm" style="color:var(--bad);font-size:16px;">${escapeHtml(msg)}</div><div class="sm">HTTP ${r.status || 'network error'}</div></div>`;
+  }
+  return false;
+}
+
+/* =========================================================
+   ACCOUNTS DIRECTORY
+   ========================================================= */
+let lastAccountsPage = { page: 0, totalPages: 1 };
+async function loadAccounts(ev){
+  if (ev) ev.preventDefault();
+  const page = document.getElementById('acct-page').value || '0';
+  const size = document.getElementById('acct-size').value || '20';
+  const frozen = document.getElementById('acct-frozen').value;
+  let url = CONFIG.baseUrl + '/internal/accounts?page=' + page + '&size=' + size;
+  if (frozen !== '') url += '&frozen=' + frozen;
+  const r = await api('GET', url);
+  renderResult('result-accounts', r);
+
+  const list = (r.data && r.data.data && r.data.data.content) || [];
+  document.getElementById('statAccountCount').textContent = (r.data && r.data.data && r.data.data.page) ? r.data.data.page.totalElements : (list.length || '—');
+
+  if (r.ok && list.length){
+    const rows = list.map(a => `<tr>
+      <td class="mono">${escapeHtml(a.accountNumber || '')}</td>
+      <td>${escapeHtml(a.fullName || '')}</td>
+      <td><span class="pill ${a.frozen ? 'bad' : 'good'}">${a.frozen ? 'frozen' : 'active'}</span></td>
+      <td class="mono">${escapeHtml(a.mpesaPhoneNumber || '—')}</td>
+      <td class="mono">${escapeHtml(a.pochiPhoneNumber || '—')}</td>
+      <td>${escapeHtml(a.paypalEmail || '—')}</td>
+      <td>${a.stripeConnected ? '<span class="pill brand">connected</span>' : '—'}</td>
+      <td>${a.lastSyncedAt ? new Date(a.lastSyncedAt).toLocaleString() : '—'}</td>
+      <td><button class="btn sm" onclick="useForLookup('${escapeHtml(a.mpesaPhoneNumber || '')}')">Use for lookup</button></td>
+    </tr>`).join('');
+    document.getElementById('result-accounts').insertAdjacentHTML('beforeend', `<div class="scroll-x" style="margin-top:14px;"><table class="data">
+      <thead><tr><th>Account</th><th>Full name</th><th>Status</th><th>M-Pesa</th><th>Pochi</th><th>PayPal</th><th>Stripe</th><th>Last synced</th><th></th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table></div>`);
+
+    const pageInfo = r.data.data.page;
+    lastAccountsPage = { page: pageInfo.number, totalPages: pageInfo.totalPages };
+    document.getElementById('acctPager').innerHTML = `
+      <span class="small muted">Page ${pageInfo.number + 1} of ${Math.max(1, pageInfo.totalPages)} &middot; ${pageInfo.totalElements} accounts</span>
+      <button class="btn sm" ${pageInfo.number <= 0 ? 'disabled' : ''} onclick="pageAccounts(-1)">&larr; Prev</button>
+      <button class="btn sm" ${pageInfo.number + 1 >= pageInfo.totalPages ? 'disabled' : ''} onclick="pageAccounts(1)">Next &rarr;</button>`;
+  } else {
+    document.getElementById('acctPager').innerHTML = '';
+  }
+  return false;
+}
+function pageAccounts(delta){
+  const next = Math.max(0, lastAccountsPage.page + delta);
+  document.getElementById('acct-page').value = next;
+  loadAccounts();
+}
+function useForLookup(phone){
+  if (!phone) return;
+  document.getElementById('lk-accountNumber').value = phone;
+  showView('lookup');
+  toast('Loaded ' + phone + ' into the lookup form', 'ok');
+}
+
+/* =========================================================
+   BOOTSTRAP
+   ========================================================= */
+(function boot(){
+  renderEnvChip();
+  if (SESSION && SESSION.accessToken){
+    enterApp();
+  }
+})();
+</script>
+</body>
+</html>
