@@ -271,6 +271,7 @@ Every setting lives in `src/main/resources/application.yml` and can be overridde
 | `HAKIKISHA_USERNAME` | none | **yes** | Basic Auth username Safaricom uses on the token endpoint. |
 | `HAKIKISHA_PASSWORD` | none | **yes** | Basic Auth password Safaricom uses on the token endpoint. |
 | `HAKIKISHA_TOKEN_TTL_SECONDS` | `3599` | no | Lifetime of an issued access token (`expires_in`). |
+| `CORS_ALLOWED_ORIGINS` | `*` | no | Comma separated browser origins allowed to call the service (only needed for the HTML test console). |
 | `HAKIKISHA_SYNC_ENABLED` | `true` | no | Turn the wallet sync job on or off. |
 | `HAKIKISHA_SYNC_INTERVAL_MINUTES` | `5` | no | Delay between sync runs, measured from the end of the previous run. |
 | `HAKIKISHA_SYNC_RUN_ON_STARTUP` | `true` | no | Also run one sync as soon as the app has started. |
@@ -278,6 +279,10 @@ Every setting lives in `src/main/resources/application.yml` and can be overridde
 | `HAKIKISHA_SYNC_DELETE_STALE` | `true` | no | Remove accounts the wallet service no longer returns (after a fully successful run). |
 | `HAKIKISHA_SYNC_CONNECT_TIMEOUT_SECONDS` | `10` | no | Connect timeout for wallet calls. |
 | `HAKIKISHA_SYNC_READ_TIMEOUT_SECONDS` | `30` | no | Read timeout for wallet calls. |
+| `HAKIKISHA_SYNC_PRESERVE_EXISTING_ON_NULL` | `true` | no | A null or blank value from the wallet service (name, phone numbers and so on) never replaces a value already stored. Set `false` if a null from the wallet should clear the stored value. |
+| `HAKIKISHA_LOOKUP_FALLBACK_ENABLED` | `true` | no | When a lookup finds no usable account, run one wallet sync immediately and look again. Needs `HAKIKISHA_SYNC_ENABLED=true`. |
+| `HAKIKISHA_LOOKUP_FALLBACK_WAIT_SECONDS` | `3` | no | Longest a lookup waits for the fallback sync. It keeps running in the background after that. |
+| `HAKIKISHA_LOOKUP_FALLBACK_COOLDOWN_SECONDS` | `30` | no | Minimum gap between fallback syncs, so unknown numbers cannot flood the wallet service. |
 
 The service **refuses to start** if `INTERNAL_API_KEY`, `HAKIKISHA_USERNAME` or `HAKIKISHA_PASSWORD` is missing, by design.
 
@@ -471,6 +476,9 @@ The lookup table is filled by a scheduled job, `WalletSyncScheduler` and `Wallet
 2. It walks **every page** (using `totalPages` from the response) and upserts each account into the `wallet_accounts` collection.
 3. After a **fully successful** run that returned at least one account, accounts not seen in that run are removed (`HAKIKISHA_SYNC_DELETE_STALE`).
 4. Overlapping runs are skipped.
+5. A `null` or blank value from the wallet service **never overwrites a value already stored** (`HAKIKISHA_SYNC_PRESERVE_EXISTING_ON_NULL`, on by default). If the wallet or auth service is half started and sends `fullName: null`, the stored name stays. A non-null value always replaces the stored one, and `frozen` is replaced whenever the wallet sends it. One consequence: if a customer removes their M-Pesa number in the wallet, the old number stays here until you turn the option off or remove the record.
+
+**Fallback on a lookup miss.** The interval above is unchanged. In addition, when a name lookup finds no usable account in MongoDB (unknown number, frozen account or no stored name), the service runs one wallet sync immediately and looks again. It is bounded so Safaricom is never kept waiting: a lookup waits at most `HAKIKISHA_LOOKUP_FALLBACK_WAIT_SECONDS`, the sync carries on in the background, and a new fallback is not started until `HAKIKISHA_LOOKUP_FALLBACK_COOLDOWN_SECONDS` have passed. Concurrent lookups share one sync. This covers an account that was created, or a name that was filled in, while the wallet service was offline.
 
 The expected wallet response shape:
 

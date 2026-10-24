@@ -24,10 +24,14 @@ public class NameLookupService {
 
     private final WalletAccountRepository repository;
     private final HakikishaProperties props;
+    private final WalletLookupFallback fallback;
 
-    public NameLookupService(WalletAccountRepository repository, HakikishaProperties props) {
+    public NameLookupService(WalletAccountRepository repository,
+                             HakikishaProperties props,
+                             WalletLookupFallback fallback) {
         this.repository = repository;
         this.props = props;
+        this.fallback = fallback;
     }
 
     public NameLookupResponse lookup(NameLookupRequest request) {
@@ -50,18 +54,14 @@ public class NameLookupService {
             throw new ApiException(HttpStatus.BAD_REQUEST, requestId, "Invalid account number");
         }
 
-        List<WalletAccount> matches;
-        try {
-            matches = repository.findByMpesaPhoneKey(msisdn);
-        } catch (RuntimeException e) {
-            log.error("Name lookup failed for requestId={}: {}", requestId, e.getMessage(), e);
-            throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR, requestId, "Internal server error");
-        }
-
         // Unknown, frozen, or nameless accounts are all reported as an invalid account number.
-        List<WalletAccount> usable = matches.stream()
-                .filter(a -> !a.isFrozen() && !isBlank(a.getFullName()))
-                .toList();
+        List<WalletAccount> usable = findUsable(msisdn, requestId);
+
+        // Not stored yet, for example wallet-service was offline during the last syncs. Refresh from
+        // wallet-service right away (bounded wait, rate limited) and look once more.
+        if (usable.isEmpty() && fallback.refresh()) {
+            usable = findUsable(msisdn, requestId);
+        }
 
         if (usable.isEmpty()) {
             log.info("Name lookup: no valid account for requestId={}", requestId);
@@ -80,6 +80,17 @@ public class NameLookupService {
                 usable.get(0).getFullName(),
                 request.accountNumber().trim(),
                 props.shortcode());
+    }
+
+    private List<WalletAccount> findUsable(String msisdn, String requestId) {
+        try {
+            return repository.findByMpesaPhoneKey(msisdn).stream()
+                    .filter(a -> !a.isFrozen() && !isBlank(a.getFullName()))
+                    .toList();
+        } catch (RuntimeException e) {
+            log.error("Name lookup failed for requestId={}: {}", requestId, e.getMessage(), e);
+            throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR, requestId, "Internal server error");
+        }
     }
 
     private static boolean isBlank(String value) {
