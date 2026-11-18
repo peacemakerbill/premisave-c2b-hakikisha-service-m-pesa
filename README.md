@@ -1,76 +1,59 @@
-<p align="center">
-  <img src="https://capsule-render.vercel.app/api?type=waving&color=00A651&height=240&section=header&text=C2B%20Hakikisha&fontSize=58&fontColor=ffffff&fontAlignY=34&desc=M-Pesa%20account%20name%20lookup%20microservice&descSize=20&descAlignY=58&animation=fadeIn" alt="C2B Hakikisha - M-Pesa account name lookup microservice banner" />
-</p>
+<div align="center">
 
-<h1 align="center">C2B Hakikisha API: M-Pesa Name Lookup Microservice</h1>
+<img src="docs/assets/banner.svg" alt="Premisave C2B Hakikisha. Tell the payer who they are about to pay." width="100%"/>
 
-<p align="center">
-  <b>A production-minded Spring Boot 4 &amp; MongoDB implementation of Safaricom's <i>C2B Hakikisha</i> (account name validation) API, keyed on the customer's M-Pesa phone number.</b>
-</p>
+<br/>
 
-<p align="center">
-  <a href="https://github.com/peacemakerbill">
-    <img src="https://avatars.githubusercontent.com/u/262163756?v=4&s=200" width="110" height="110" alt="Bill Graham Peacemaker (peacemakerbill) GitHub profile picture" />
-  </a>
-  <br/>
-  <sub>Built by <a href="https://github.com/peacemakerbill"><b>Bill Graham Peacemaker</b></a> (<code>@peacemakerbill</code>) · Full-Stack Software Engineer · API Integration Specialist · Nairobi, Kenya</sub>
-</p>
+[![Java 21](https://img.shields.io/badge/Java-21-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)](https://openjdk.org/projects/jdk/21/)
+[![Spring Boot 4](https://img.shields.io/badge/Spring_Boot-4-6DB33F?style=for-the-badge&logo=springboot&logoColor=white)](https://spring.io/projects/spring-boot)
+[![MongoDB Spring Data](https://img.shields.io/badge/MongoDB-Spring_Data-47A248?style=for-the-badge&logo=mongodb&logoColor=white)](https://www.mongodb.com)
+[![M-PESA Hakikisha](https://img.shields.io/badge/M--PESA-Hakikisha-00A651?style=for-the-badge)](https://developer.safaricom.co.ke)
+[![Maven Wrapper](https://img.shields.io/badge/Maven-Wrapper-C71A36?style=for-the-badge&logo=apachemaven&logoColor=white)](https://maven.apache.org)
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Java-21-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white" alt="Java 21" />
-  <img src="https://img.shields.io/badge/Spring_Boot-4.2.0--SNAPSHOT-6DB33F?style=for-the-badge&logo=springboot&logoColor=white" alt="Spring Boot 4.2.0-SNAPSHOT" />
-  <img src="https://img.shields.io/badge/MongoDB-Spring_Data-47A248?style=for-the-badge&logo=mongodb&logoColor=white" alt="MongoDB with Spring Data" />
-  <img src="https://img.shields.io/badge/Maven-Build-C71A36?style=for-the-badge&logo=apachemaven&logoColor=white" alt="Apache Maven" />
-  <img src="https://img.shields.io/badge/M--PESA-C2B_Hakikisha-00A651?style=for-the-badge" alt="M-PESA C2B Hakikisha" />
-</p>
+![Auth Basic](https://img.shields.io/badge/Auth-Basic-0E3B2F?style=flat-square)
+![Sync Every 5 minutes](https://img.shields.io/badge/Sync-Every_5_minutes-14493B?style=flat-square)
 
-<p align="center">
-  <a href="https://github.com/peacemakerbill/premisave-c2b-hakikisha-service-m-pesa/stargazers"><img src="https://img.shields.io/github/stars/peacemakerbill/premisave-c2b-hakikisha-service-m-pesa?style=for-the-badge&logo=github" alt="GitHub stars" /></a>
-  <a href="https://github.com/peacemakerbill/premisave-c2b-hakikisha-service-m-pesa/network/members"><img src="https://img.shields.io/github/forks/peacemakerbill/premisave-c2b-hakikisha-service-m-pesa?style=for-the-badge&logo=github" alt="GitHub forks" /></a>
-  <a href="https://github.com/peacemakerbill/premisave-c2b-hakikisha-service-m-pesa/issues"><img src="https://img.shields.io/github/issues/peacemakerbill/premisave-c2b-hakikisha-service-m-pesa?style=for-the-badge" alt="Open issues" /></a>
-  <a href="https://github.com/peacemakerbill/premisave-c2b-hakikisha-service-m-pesa/commits"><img src="https://img.shields.io/github/last-commit/peacemakerbill/premisave-c2b-hakikisha-service-m-pesa?style=for-the-badge" alt="Last commit" /></a>
-  <img src="https://img.shields.io/github/repo-size/peacemakerbill/premisave-c2b-hakikisha-service-m-pesa?style=for-the-badge" alt="Repository size" />
-  <img src="https://img.shields.io/badge/PRs-welcome-brightgreen?style=for-the-badge" alt="Pull requests welcome" />
-  <img src="https://img.shields.io/badge/Made_in-Nairobi,_Kenya-000000?style=for-the-badge" alt="Made in Nairobi, Kenya" />
-</p>
+[![Last commit](https://img.shields.io/github/last-commit/peacemakerbill/premisave-c2b-hakikisha-service-m-pesa?style=flat-square&color=14493B)](https://github.com/peacemakerbill/premisave-c2b-hakikisha-service-m-pesa/commits/main)
+[![Stars](https://img.shields.io/github/stars/peacemakerbill/premisave-c2b-hakikisha-service-m-pesa?style=flat-square&color=14493B)](https://github.com/peacemakerbill/premisave-c2b-hakikisha-service-m-pesa/stargazers)
+[![Issues](https://img.shields.io/github/issues/peacemakerbill/premisave-c2b-hakikisha-service-m-pesa?style=flat-square&color=14493B)](https://github.com/peacemakerbill/premisave-c2b-hakikisha-service-m-pesa/issues)
+[![Frontend](https://img.shields.io/badge/frontend-premisave__flutter__frontend-0E3B2F?style=flat-square&logo=flutter&logoColor=E3A72F)](https://github.com/peacemakerbill/premisave_flutter_frontend)
 
-<p align="center">
-  <a href="#quick-start">Quick start</a> ·
-  <a href="#how-the-safaricom-c2b-hakikisha-flow-works">How it works</a> ·
-  <a href="#api-reference">API reference</a> ·
-  <a href="#configuration-reference">Configuration</a> ·
-  <a href="#troubleshooting">Troubleshooting</a>
-</p>
+**[Quick start](#quick-start)** &nbsp;|&nbsp; **[Where it sits](#where-it-sits)** &nbsp;|&nbsp; **[Flutter app](#connected-to-the-flutter-app)** &nbsp;|&nbsp; **[How it works](#how-the-safaricom-c2b-hakikisha-flow-works)** &nbsp;|&nbsp; **[API reference](#api-reference)** &nbsp;|&nbsp; **[Configuration](#configuration-reference)** &nbsp;|&nbsp; **[Troubleshooting](#troubleshooting)**
 
-> ⭐ **If this saves you time integrating M-Pesa C2B Hakikisha, please star the repo.** It helps other Kenyan fintech developers find it.
+</div>
+
+<img src="docs/assets/divider.svg" alt="" width="100%"/>
+
+> **If this saves you time integrating M-Pesa C2B Hakikisha, please star the repo.** It helps other Kenyan fintech developers find it.
 
 > **Disclaimer.** This is an independent, community-built project. It is **not** an official Safaricom product and is not affiliated with or endorsed by Safaricom PLC. M-PESA is a trademark of Safaricom. Always follow Safaricom's own C2B Hakikisha documentation for onboarding and go-live requirements.
 
----
+## Contents
 
-## Table of contents
+- [What is this?](#what-is-this)
+- [Features](#features)
+- [Architecture](#architecture)
+- [How the Safaricom C2B Hakikisha flow works](#how-the-safaricom-c2b-hakikisha-flow-works)
+- [Where it sits](#where-it-sits)
+- [A request, step by step](#a-request-step-by-step)
+- [Connected to the Flutter app](#connected-to-the-flutter-app)
+- [Quick start](#quick-start)
+- [Build and run](#build-and-run)
+- [Configuration reference](#configuration-reference)
+- [API reference](#api-reference)
+- [Testing with Postman or curl](#testing-with-postman-or-curl)
+- [Wallet sync job](#wallet-sync-job)
+- [Data model and phone number matching](#data-model-and-phone-number-matching)
+- [Compliance with the Safaricom documentation](#compliance-with-the-safaricom-documentation)
+- [Going live](#going-live)
+- [Security notes](#security-notes)
+- [Project structure](#project-structure)
+- [Troubleshooting](#troubleshooting)
+- [Roadmap ideas](#roadmap-ideas)
+- [Contributing](#contributing)
+- [Author](#author)
 
-1. [What is this?](#what-is-this)
-2. [Features](#features)
-3. [Architecture](#architecture)
-4. [How the Safaricom C2B Hakikisha flow works](#how-the-safaricom-c2b-hakikisha-flow-works)
-5. [Quick start](#quick-start)
-6. [Build and run](#build-and-run)
-7. [Configuration reference](#configuration-reference)
-8. [API reference](#api-reference)
-9. [Testing with Postman or curl](#testing-with-postman-or-curl)
-10. [Wallet sync job](#wallet-sync-job)
-11. [Data model and phone number matching](#data-model-and-phone-number-matching)
-12. [Compliance with the Safaricom documentation](#compliance-with-the-safaricom-documentation)
-13. [Going live](#going-live)
-14. [Security notes](#security-notes)
-15. [Project structure](#project-structure)
-16. [Troubleshooting](#troubleshooting)
-17. [Roadmap ideas](#roadmap-ideas)
-18. [Contributing](#contributing)
-19. [Author](#author)
-
----
+<img src="docs/assets/divider.svg" alt="" width="100%"/>
 
 ## What is this?
 
@@ -193,6 +176,113 @@ Success response (`200 OK`):
 | Unexpected server-side failure (for example the database is down) | `500 Internal Server Error` | `Internal server error` |
 
 All lookup errors have the shape `{ "requestId": "...", "errorMessage": "..." }`.
+
+<img src="docs/assets/divider.svg" alt="" width="100%"/>
+
+## Where it sits
+
+<img src="docs/assets/services.svg" alt="The Flutter app on the left and the seven Premisave services on the right with their ports and the setting that holds each address. This service is picked out." width="100%"/>
+
+This service answers Safaricom, not people: it says which name belongs to an M-Pesa number. It copies its accounts from the wallet service. The Flutter app carries a small staff tool for it, so a person can check a number without Postman.
+
+| Caller | What for | Proves who it is with |
+| --- | --- | --- |
+| Safaricom | the token and name lookup endpoints | Basic credentials, then a token |
+| Flutter app | M-Pesa name lookup, for staff | the same service username and password |
+| wallet-service | called by this service for the accounts | `X-API-Key` internal key |
+
+It listens on port **8090**. The Flutter app finds it with the setting `C2B_URL`.
+
+<img src="docs/assets/divider.svg" alt="" width="100%"/>
+
+## A request, step by step
+
+<img src="docs/assets/flow.svg" alt="The request the Flutter app makes, step by step, and who answers each step." width="100%"/>
+
+Safaricom asks for a token with Basic credentials and then for a name. The answer comes from MongoDB, so it is fast and does not depend on the wallet being up. A sync keeps the copy fresh.
+
+<img src="docs/assets/divider.svg" alt="" width="100%"/>
+
+## Connected to the Flutter app
+
+<img src="docs/assets/connect.svg" alt="A screen asks a provider, which asks the repository, which uses the API client to call this service." width="100%"/>
+
+The Flutter app's **M-Pesa name lookup** screen uses this service. It is shown to operations, finance, support and administrators. It is a staff tool, not a customer screen.
+
+The code is in [`premisave_flutter_frontend`](https://github.com/peacemakerbill/premisave_flutter_frontend): the repository class is `lib/src/data/repositories/c2b_repository.dart`, the providers are in `lib/src/state`, and every call below goes through one client built for this service.
+
+### What the app does with it
+
+| Screen | What it does | Calls |
+| --- | --- | --- |
+| Connect | The staff member types the service username and password, and the app trades them for a token | `POST /oauth2/v1/generate` |
+| Look up a name | An M-Pesa number and the paybill shortcode | `POST /api/v1/c2b/hakikisha/name-lookup` |
+| Saved accounts | A page of the accounts the service holds | `GET /internal/accounts` |
+
+- This service does not accept the person's sign in. It has its own username and password (`HAKIKISHA_USERNAME`, `HAKIKISHA_PASSWORD`), and the token it issues is short lived.
+- The credentials and the token are kept in memory, so closing the app forgets them. A person can tick **Remember on this device** to keep the username and password in the device's secure storage, and the screen then connects by itself next time. It is not offered on the web. **Forget the saved credentials** removes them.
+- The token endpoint and the lookup answer with plain bodies. `/internal/accounts` uses the `{ success, message, data }` envelope. Errors come back as `{ "errorMessage": "..." }`, which the app reads.
+
+### Settings
+
+In the Flutter app, in `config/env/*.json` or passed with `--dart-define`:
+
+| Key | Default | Meaning |
+| --- | --- | --- |
+| `C2B_URL` | `http://localhost:8090`, or `http://10.0.2.2:8090` on the Android emulator | Where this service lives, with no trailing slash |
+
+On a real phone `localhost` is the phone itself, so use the computer's address on the network. Flutter reads these values only at launch: stop the app and run it again after a change.
+
+In this service's `.env`:
+
+| Variable | Why the app cares |
+| --- | --- |
+| `HAKIKISHA_USERNAME` | The Basic username Safaricom, and the app, use |
+| `HAKIKISHA_PASSWORD` | The Basic password |
+| `HAKIKISHA_SHORTCODE` | The paybill the service answers for. The app asks for it too |
+| `CORS_ALLOWED_ORIGINS` | Browser origins that may call this service |
+| `INTERNAL_API_KEY` | Must equal the wallet service value |
+
+### Signing and tokens
+
+This service does **not** accept the auth-service token. It has one username and password (`HAKIKISHA_USERNAME`, `HAKIKISHA_PASSWORD`) that Safaricom uses with Basic authentication. The staff tool types them in, trades them at `POST /oauth2/v1/generate` for a short lived token, and keeps both **in memory** by default, so closing the app forgets them. Only if the person ticks **Remember on this device** are the username and password written to the device's secure storage (never on the web), and **Forget the saved credentials** deletes them.
+
+### Browser rules (CORS)
+
+A phone or desktop build is not stopped by CORS. A browser is, so for the web build this service must allow the address the app is served from, which is `http://localhost:3000` in development.
+
+| Setting | Default | What to do |
+| --- | --- | --- |
+| `CORS_ALLOWED_ORIGINS` | `*`, any origin | Safaricom calls server to server, so this only matters for browsers. Narrow it to the origins you serve the app from. |
+
+### Run it together
+
+Each command is run in its own terminal. Start the services this one needs first.
+
+```bash
+# 1. premisave-wallet-service
+cd ~/MyProjects/premisave/premisave-wallet-service && ./mvnw spring-boot:run
+
+# 2. this service
+cd ~/MyProjects/premisave/premisave-c2b-hakikisha-service-m-pesa && ./mvnw spring-boot:run
+
+# 3. the app, on the port the backends allow for browsers
+cd ~/MyProjects/premisave/premisave_flutter_frontend
+flutter run -d chrome --web-port=3000 --dart-define-from-file=config/env/dev.local.json
+```
+
+Leave `C2B_URL` empty in the app's file and it finds this service on `localhost:8090`. The same walk through for every service is in [the app's docs](https://github.com/peacemakerbill/premisave_flutter_frontend/blob/main/docs/SERVICES.md).
+
+### If it does not connect
+
+| You see | Likely cause | Do this |
+| --- | --- | --- |
+| Connect says the credentials are wrong | The username or password differs from the `.env` | Use the `HAKIKISHA_USERNAME` and `HAKIKISHA_PASSWORD` the service started with |
+| A lookup says the account was not found | The number is not in the copy yet | Wait for the next sync (every 5 minutes), or restart the service to sync at startup |
+| A lookup is rejected for the shortcode | The shortcode is not `HAKIKISHA_SHORTCODE` | Type the paybill the service was started with |
+| "Could not reach the server" | The service is not running, or `C2B_URL` points elsewhere | Start it, or set `C2B_URL` and restart the app |
+
+<img src="docs/assets/divider.svg" alt="" width="100%"/>
 
 ## Quick start
 
@@ -705,7 +795,7 @@ Found a bug or have an M-Pesa integration question? [Open an issue](https://gith
   <img src="https://api.star-history.com/svg?repos=peacemakerbill/premisave-c2b-hakikisha-service-m-pesa&type=Date" alt="Star history chart for premisave-c2b-hakikisha-service-m-pesa" width="600" />
 </a>
 
----
+<img src="docs/assets/divider.svg" alt="" width="100%"/>
 
 <details>
 <summary>Search keywords</summary>
@@ -715,5 +805,5 @@ M-Pesa C2B Hakikisha API · Safaricom C2B Hakikisha · M-Pesa account name looku
 </details>
 
 <p align="center">
-  <sub>Made with ☕ in Nairobi, Kenya · <a href="https://github.com/peacemakerbill">@peacemakerbill</a></sub>
+  <sub>Made in Nairobi, Kenya · <a href="https://github.com/peacemakerbill">@peacemakerbill</a></sub>
 </p>
