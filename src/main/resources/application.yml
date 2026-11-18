@@ -29,6 +29,15 @@ wallet:
 internal:
   api-key: ${INTERNAL_API_KEY}
 
+# ─── Premisave sign in (lets staff in the Premisave app get a lookup session) ─
+platform:
+  jwt:
+    # Must match JWT_SECRET of the auth and wallet services. The app sends the signed in person's token to
+    # GET /console/v1/session, and the service answers with the shortcode and an access token built from the
+    # credentials below, so nobody types the Hakikisha username and password.
+    secret: ${JWT_SECRET:eW91ci12ZXJ5LXNlY3VyZS1qd3Qtc2VjcmV0LWtleS0zMi1ieXRlcyE=}
+    staff-roles: ${HAKIKISHA_CONSOLE_ROLES:ADMIN,FINANCE,OPERATIONS,SUPPORT}
+
 # ─── C2B Hakikisha ────────────────────────────────────────────────────────────
 hakikisha:
   # Organisation paybill shortcode. Requests carrying any other shortcode are rejected.

@@ -245,7 +245,9 @@ In this service's `.env`:
 
 ### Signing and tokens
 
-This service does **not** accept the auth-service token. It has one username and password (`HAKIKISHA_USERNAME`, `HAKIKISHA_PASSWORD`) that Safaricom uses with Basic authentication. The staff tool types them in, trades them at `POST /oauth2/v1/generate` for a short lived token, and keeps both **in memory** by default, so closing the app forgets them. Only if the person ticks **Remember on this device** are the username and password written to the device's secure storage (never on the web), and **Forget the saved credentials** deletes them.
+Safaricom and other machines use one username and password (`HAKIKISHA_USERNAME`, `HAKIKISHA_PASSWORD`) with Basic authentication, and trade them at `POST /oauth2/v1/generate` for a short lived token.
+
+Premisave staff do not type them. The app sends the signed in person's Premisave token to `GET /console/v1/session`. The service checks it with `JWT_SECRET` (the same value as the auth service), accepts the roles in `HAKIKISHA_CONSOLE_ROLES` (default `ADMIN,FINANCE,OPERATIONS,SUPPORT`), and answers with the shortcode and a short lived access token built from the credentials in its own `application.yml`. The credentials never leave the service. If that call fails, the app shows why and offers a manual form, where **Remember on this device** is the person's choice (never on the web).
 
 ### Browser rules (CORS)
 
@@ -277,6 +279,7 @@ Leave `C2B_URL` empty in the app's file and it finds this service on `localhost:
 
 | You see | Likely cause | Do this |
 | --- | --- | --- |
+| The app shows the manual form instead of connecting | `JWT_SECRET` differs from the auth service, or the person's role is not in `HAKIKISHA_CONSOLE_ROLES` | Fix the value and restart the service |
 | Connect says the credentials are wrong | The username or password differs from the `.env` | Use the `HAKIKISHA_USERNAME` and `HAKIKISHA_PASSWORD` the service started with |
 | A lookup says the account was not found | The number is not in the copy yet | Wait for the next sync (every 5 minutes), or restart the service to sync at startup |
 | A lookup is rejected for the shortcode | The shortcode is not `HAKIKISHA_SHORTCODE` | Type the paybill the service was started with |
@@ -361,6 +364,8 @@ Every setting lives in `src/main/resources/application.yml` and can be overridde
 | `HAKIKISHA_USERNAME` | none | **yes** | Basic Auth username Safaricom uses on the token endpoint. |
 | `HAKIKISHA_PASSWORD` | none | **yes** | Basic Auth password Safaricom uses on the token endpoint. |
 | `HAKIKISHA_TOKEN_TTL_SECONDS` | `3599` | no | Lifetime of an issued access token (`expires_in`). |
+| `JWT_SECRET` | built in dev value | **yes in production** | Must equal the auth service secret. Used to verify the Premisave token sent to `/console/v1/session`. |
+| `HAKIKISHA_CONSOLE_ROLES` | `ADMIN,FINANCE,OPERATIONS,SUPPORT` | no | Roles that may open a lookup session from the app. |
 | `CORS_ALLOWED_ORIGINS` | `*` | no | Comma separated browser origins allowed to call the service (only needed for the HTML test console). |
 | `HAKIKISHA_SYNC_ENABLED` | `true` | no | Turn the wallet sync job on or off. |
 | `HAKIKISHA_SYNC_INTERVAL_MINUTES` | `5` | no | Delay between sync runs, measured from the end of the previous run. |
